@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Rettiwt</string>
+
+    <string name="standard_error">Erro desconhecido</string>
+    <string name="standard_snack_msg">Erro desconhecido</string>
+    <string name="standard_snack_btn">Tentar Novamente</string>
+
+    <string name="home_new_content_button">Nova publicação</string>
+    <string name="home_edit_text_hint">Digite alguma coisa</string>
+
+    <string name="login_password">Senha</string>
+    <string name="login_nickname">Usuário</string>
+    <string name="login_enter">Entrar</string>
+
+</resources>
