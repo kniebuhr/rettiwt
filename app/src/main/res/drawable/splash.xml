@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--background image-->
+    <item android:drawable="@color/colorPrimary" />
+
+    <!--logo-->
+    <item
+        android:width="@dimen/login_image_width"
+        android:height="@dimen/login_image_height"
+        android:drawable="@drawable/ic_forward"
+        android:gravity="center" />
+
+
+</layer-list>
