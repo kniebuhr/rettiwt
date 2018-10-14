@@ -30,19 +30,42 @@ data class ConnectResponse(
     )
 }
 
-data class PostResponse(
+data class UpdatePostResponse(
+        val method: String?,
+        val status: Int?,
+        val message: String?,
+        val data: UpdatePostData?
+) {
+    data class UpdatePostData(
+            val post_id: String?,
+            val count: Int?
+    )
+}
+
+data class NewPostResponse(
         val method: String?,
         val status: Int?,
         val message: String?,
         val data: PostData?
+)
+
+data class AllPostsResponse(
+        val method: String?,
+        val status: Int?,
+        val message: String?,
+        val data: List<PostData>?
+)
+
+data class PostData(
+        val id: String?,
+        val rtCount: Int?,
+        val starsCount: Int?,
+        val image: String?,
+        val createdAt: String?,
+        val rtOriginalPost: PostData?,
+        val text: String?,
+        val postedBy: UserData?
 ) {
-    data class PostData(
-            val id: String?,
-            var rtCount: Int?,
-            var starsCount: Int?,
-            val text: String?,
-            val postedBy: UserData?
-    )
 
     data class UserData(
             val nickname: String?,
@@ -50,7 +73,13 @@ data class PostResponse(
     )
 
     fun toModel(): HomeItemModel {
-        return HomeItemModel(id = data?.id, stars = data?.starsCount, rettiwts = data?.rtCount,
-                text = data?.text, user = data?.postedBy?.nickname, picture = null, video = null, date = null)
+        return if (rtOriginalPost == null) {
+            HomeItemModel(id = id, stars = starsCount, rettiwts = rtCount,
+                    text = text, user = postedBy?.nickname, picture = image, date = createdAt, originalPoster = null)
+        } else {
+            HomeItemModel(id = rtOriginalPost.id, stars = rtOriginalPost.starsCount, rettiwts = rtOriginalPost.rtCount,
+                    text = rtOriginalPost.text, user = postedBy?.nickname, picture = rtOriginalPost.image,
+                    date = rtOriginalPost.createdAt, originalPoster = rtOriginalPost.postedBy?.nickname)
+        }
     }
 }

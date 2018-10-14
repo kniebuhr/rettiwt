@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import br.com.rettiwt.R
 import br.com.rettiwt.changeDateFormat
 import br.com.rettiwt.models.HomeItemModel
+import br.com.rettiwt.setVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.item_home.view.*
@@ -40,12 +41,16 @@ class HomeAdapter(private val onClickListener: OnClickListener) : RecyclerView.A
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: HomeItemModel) {
             itemView.apply {
+                itemHomeRettiwtIv.setVisible(item.originalPoster != null)
+                itemHomeRettiwtNameTv.setVisible(item.originalPoster != null)
+                itemHomeRettiwtNameTv.text = item.originalPoster
                 itemHomeBodyTv.text = item.text
                 itemHomeNameTv.text = item.user
                 itemHomeRettiwtsTv.text = "${item.rettiwts ?: 0}"
                 itemHomeStarsTv.text = "${item.stars ?: 0}"
                 itemHomeBodyDateTv.text = item.date?.changeDateFormat("dd/MM/yyyy HH:mm", "dd 'de' MMMM HH:mm")
-                Glide.with(this).load(item.video ?: item.picture)
+                itemHomeCard.setVisible(item.picture != null)
+                Glide.with(this).load(item.picture)
                         .apply(RequestOptions().placeholder(R.drawable.bg_placeholder_photo)).into(itemHomeIv)
                 itemHomeStarsLl.setOnClickListener {
                     onClickListener.onClickStar(item.id)

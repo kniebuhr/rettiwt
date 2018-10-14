@@ -1,6 +1,7 @@
 package br.com.rettiwt
 
 import android.os.Handler
+import android.util.Log
 import br.com.rettiwt.models.ConnectResponse
 import br.com.rettiwt.models.KeepAliveParams
 import br.com.rettiwt.models.MethodRequest
@@ -16,7 +17,7 @@ object AsyncSocket {
 
     interface SocketListener {
         fun messageReceived(message: String)
-        fun onError(message: String?)
+        fun onError(status: Int?, message: String?)
     }
 
     private var socket: Socket? = null
@@ -38,12 +39,12 @@ object AsyncSocket {
 
     private var handler: Handler? = Handler()
     private var runnable: Runnable? = Runnable {
-        send(MethodRequest(METHOD_KEEP_ALIVE, APP_ID, PreferencesHelper.getAuthorization(), KeepAliveParams(PreferencesHelper.getSocketId())))
+        send(METHOD_KEEP_ALIVE, KeepAliveParams(PreferencesHelper.getSocketId()))
         keepAlive()
     }
 
     private fun keepAlive() {
-        handler?.postDelayed(runnable, 250000)
+        handler?.postDelayed(runnable, 12500)
     }
 
     private fun listen() {
@@ -52,10 +53,11 @@ object AsyncSocket {
             if (line == null) {
                 break
             } else if (line.isNotBlank()) {
+                Log.e("SOCKET_TAG", line)
                 val gson = Gson()
                 val response = gson.fromJson(line, MethodResponse::class.java)
-                if (response.status !in listOf(200, 1200)) {
-                    socketListener?.onError(response.message)
+                if (response.status != 1200) {
+                    socketListener?.onError(response.status, response.message)
                 } else if (response.method == METHOD_CONNECT) {
                     val response = gson.fromJson(line, ConnectResponse::class.java)
                     PreferencesHelper.putSocketId(response.data?.socket_id)
@@ -66,17 +68,17 @@ object AsyncSocket {
         }
     }
 
-    fun send(data: Any) {
+    fun send(method: String?, params: Any? = null) {
         socket?.let {
             try {
                 val gson = Gson()
-                val json = gson.toJson(data)
+                val json = gson.toJson(MethodRequest(method, APP_ID, PreferencesHelper.getAuthorization(), params))
                 thread { it.getOutputStream().write(json.toByteArray()) }
             } catch (e: Exception) {
                 parseException(e)
             }
         } ?: run {
-            socketListener?.onError("Socket foi fechado, tente novamente")
+            socketListener?.onError(1404, "Socket foi fechado, tente novamente")
             start()
         }
     }
@@ -85,13 +87,11 @@ object AsyncSocket {
         e.printStackTrace()
         when (e) {
             is ConnectException -> {
-                socketListener?.onError("Erro de conexão")
+                socketListener?.onError(1404, "Erro de conexão")
             }
-            else -> {
-                socketListener?.onError("Erro desconhecido")
-            }
+            else ->
+                socketListener?.onError(1404, "Erro desconhecido")
         }
     }
-
 
 }

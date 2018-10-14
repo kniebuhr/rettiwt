@@ -1,10 +1,13 @@
 package br.com.rettiwt.activity.home
 
-import android.net.Uri
 import br.com.rettiwt.*
 import br.com.rettiwt.models.*
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
+import kotlin.concurrent.thread
+
 
 class HomePresenter : HomeContract.Presenter {
 
@@ -13,62 +16,99 @@ class HomePresenter : HomeContract.Presenter {
             message.parse { method, message ->
                 val gson = Gson()
                 when (method) {
+                    METHOD_NEW_STAR -> {
+                        val response = gson.fromJson(message, UpdatePostResponse::class.java)
+                        updateStarCount(response)
+                    }
+                    METHOD_NEW_RETTIWT -> {
+                        val response = gson.fromJson(message, UpdatePostResponse::class.java)
+                        updateRettiwtCount(response)
+                    }
                     METHOD_NEW_POST -> {
-                        val response = gson.fromJson(message, PostResponse::class.java)
-                        updateItems(listOf(response.toModel()))
+                        val response = gson.fromJson(message, NewPostResponse::class.java)
+                        updateItems(listOf(response.data!!.toModel()))
                     }
                     METHOD_GET_ALL -> {
-                        val type = object : TypeToken<List<PostResponse>>() {}.type
-                        val response = Gson().fromJson<List<PostResponse>>(message, type)
-                        updateItems(response.map { it.toModel() })
+                        val response = gson.fromJson(message, AllPostsResponse::class.java)
+                        updateItems(response.data!!.map { it.toModel() })
                     }
                 }
             }
         }
 
-        override fun onError(message: String?) {
+        override fun onError(status: Int?, message: String?) {
             view?.displayMessage(message)
+            if (status == 1401) {
+                logout(true)
+            }
         }
     }
 
     private var view: HomeContract.View? = null
-    private val homeItems: MutableList<HomeItemModel> = mutableListOf()
+    private var homeItems: List<HomeItemModel> = listOf()
 
     override fun startSocket() {
-        AsyncSocket.socketListener = socketListener
-        AsyncSocket.send(MethodRequest(METHOD_GET_ALL, APP_ID, PreferencesHelper.getAuthorization(), null))
+        AsyncSocket.send(METHOD_GET_ALL)
     }
 
     private fun updateItems(posts: List<HomeItemModel>) {
-        homeItems.addAll(posts)
+        homeItems = posts + homeItems
         view?.displayItems(homeItems)
     }
 
+    private fun updateRettiwtCount(response: UpdatePostResponse) {
+        homeItems.find { it.id == response.data?.post_id }?.rettiwts = response.data?.count
+        view?.displayItems(homeItems)
+    }
+
+    private fun updateStarCount(response: UpdatePostResponse) {
+        homeItems.find { it.id == response.data?.post_id }?.stars = response.data?.count
+        view?.displayItems(homeItems)
+    }
+
+    override fun onClickLogout() {
+        logout(false)
+    }
+
+    private fun logout(invalid: Boolean) {
+        PreferencesHelper.putAuthorization(null)
+        view?.openLogin(invalid)
+    }
+
     override fun onClickSend(message: String) {
-        AsyncSocket.send(MethodRequest(METHOD_SEND, APP_ID, PreferencesHelper.getAuthorization(), SendParams(message)))
+        AsyncSocket.send(METHOD_SEND, SendParams(message))
     }
 
     override fun onClickStar(id: String?) {
-        AsyncSocket.send(MethodRequest(METHOD_STAR, APP_ID, PreferencesHelper.getAuthorization(), StarParams(id)))
+        AsyncSocket.send(METHOD_STAR, StarParams(id))
     }
 
     override fun onClickRettiwt(id: String?) {
-        AsyncSocket.send(MethodRequest(METHOD_RETTIWT, APP_ID, PreferencesHelper.getAuthorization(), RettiwtParams(id)))
+        AsyncSocket.send(METHOD_RETTIWT, RettiwtParams(id))
     }
 
     override fun onClickCamera() {
         view?.openGalleryPicker()
     }
 
-    override fun onImagePicked(imageUri: Uri?) {
+    override fun onImagePicked(text: String?, bitmap: Bitmap?) {
+        thread {
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
 
+            val encoded = Base64.encodeToString(byteArray, Base64.DEFAULT)
+            AsyncSocket.send(METHOD_SEND, SendParams(text, "Imagem"))
+        }
     }
 
     override fun attachView(view: HomeContract.View) {
         this.view = view
+        AsyncSocket.socketListener = socketListener
     }
 
     override fun detachView() {
+        AsyncSocket.socketListener = null
         view = null
     }
 }

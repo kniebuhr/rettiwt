@@ -8,8 +8,7 @@ import br.com.rettiwt.models.ConnectResponse
 import br.com.rettiwt.models.MethodRequest
 import com.google.gson.Gson
 
-class LoginPresenter: LoginContract.Presenter {
-
+class LoginPresenter : LoginContract.Presenter {
 
 
     private val socketListener = object : AsyncSocket.SocketListener {
@@ -26,7 +25,7 @@ class LoginPresenter: LoginContract.Presenter {
             }
         }
 
-        override fun onError(message: String?) {
+        override fun onError(status: Int?, message: String?) {
             view?.displayMessage(message)
         }
     }
@@ -35,7 +34,7 @@ class LoginPresenter: LoginContract.Presenter {
 
     override fun onClickEnter(username: String, password: String) {
         if (username.isNotBlank() && password.isNotBlank()) {
-            AsyncSocket.send(MethodRequest(METHOD_AUTH, APP_ID, null, AuthParams(username, password)))
+            AsyncSocket.send(METHOD_AUTH, AuthParams(username, password))
         }
     }
 

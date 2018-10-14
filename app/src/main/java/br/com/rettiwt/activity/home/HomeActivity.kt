@@ -6,14 +6,18 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import br.com.rettiwt.R
 import br.com.rettiwt.REQUEST_IMAGE
+import br.com.rettiwt.activity.login.createLoginIntent
 import br.com.rettiwt.models.HomeItemModel
 import br.com.rettiwt.setVisible
 import br.com.rettiwt.snack
 import kotlinx.android.synthetic.main.activity_home.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
+import android.provider.MediaStore
 
 class HomeActivity : AppCompatActivity(), HomeContract.View {
 
@@ -41,26 +45,57 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+        setSupportActionBar(toolbar)
+        title = "Rettiwt"
         setListeners()
         presenter.startSocket()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.detachView()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_home, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_logout -> {
+                presenter.onClickLogout()
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
     private fun setListeners() {
-        homeSendBtn.setOnClickListener { presenter.onClickSend(homeEt.text.toString()) }
+        homeSendBtn.setOnClickListener {
+            presenter.onClickSend(homeEt.text.toString())
+            homeEt.setText("")
+        }
         homeCameraBtn.setOnClickListener { presenter.onClickCamera() }
     }
 
     override fun displayNewContentButton(show: Boolean) {
-        homeNewContentBtn.setVisible(show)
+        runOnUiThread {
+            homeNewContentBtn.setVisible(show)
+        }
     }
 
     override fun displayItems(items: List<HomeItemModel>) {
-        adapter.list = items
+        runOnUiThread {
+            adapter.list = items
+        }
     }
 
     override fun displayMessage(msg: String?) {
         runOnUiThread {
-            toast(msg ?: getString(R.string.standard_error))
+            applicationContext.toast(msg ?: getString(R.string.standard_error))
         }
     }
 
@@ -78,11 +113,22 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         startActivityForResult(photoPickerIntent, REQUEST_IMAGE)
     }
 
+    override fun openLogin(invalid: Boolean) {
+        startActivity(createLoginIntent())
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_IMAGE) {
-            val uri = data?.data
-            presenter.onImagePicked(uri)
+            try {
+                val uri = data?.data
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                presenter.onImagePicked(homeEt.text.toString(), bitmap)
+                homeEt.setText("")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                displayMessage("Erro ao salvar imagem.")
+            }
         }
     }
 }

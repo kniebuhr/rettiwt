@@ -13,7 +13,8 @@ data class AuthParams(
 )
 
 data class SendParams(
-        val text: String?
+        val text: String?,
+        val image: String? = null
 )
 
 data class KeepAliveParams(

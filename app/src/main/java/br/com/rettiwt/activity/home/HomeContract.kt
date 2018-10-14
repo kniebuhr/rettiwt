@@ -1,5 +1,6 @@
 package br.com.rettiwt.activity.home
 
+import android.graphics.Bitmap
 import android.net.Uri
 import br.com.rettiwt.models.HomeItemModel
 
@@ -11,15 +12,17 @@ interface HomeContract {
         fun displayNewContentButton(show: Boolean)
         fun displayItems(items: List<HomeItemModel>)
         fun openGalleryPicker()
+        fun openLogin(invalid: Boolean)
     }
 
     interface Presenter {
         fun startSocket()
+        fun onClickLogout()
         fun onClickStar(id: String?)
         fun onClickRettiwt(id: String?)
         fun onClickSend(message: String)
         fun onClickCamera()
-        fun onImagePicked(imageUri: Uri?)
+        fun onImagePicked(text: String?, bitmap: Bitmap?)
         fun attachView(view: View)
         fun detachView()
     }
