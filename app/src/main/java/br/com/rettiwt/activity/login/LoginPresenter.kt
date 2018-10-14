@@ -7,6 +7,7 @@ import br.com.rettiwt.models.AuthResponse
 import br.com.rettiwt.models.ConnectResponse
 import br.com.rettiwt.models.MethodRequest
 import com.google.gson.Gson
+import java.security.MessageDigest
 
 class LoginPresenter : LoginContract.Presenter {
 
@@ -34,7 +35,7 @@ class LoginPresenter : LoginContract.Presenter {
 
     override fun onClickEnter(username: String, password: String) {
         if (username.isNotBlank() && password.isNotBlank()) {
-            AsyncSocket.send(METHOD_AUTH, AuthParams(username, password))
+            AsyncSocket.send(METHOD_AUTH, AuthParams(username, password.toMd5()))
         }
     }
 

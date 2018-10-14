@@ -57,12 +57,18 @@ class HomePresenter : HomeContract.Presenter {
     }
 
     private fun updateRettiwtCount(response: UpdatePostResponse) {
-        homeItems.find { it.id == response.data?.post_id }?.rettiwts = response.data?.count
+        homeItems.forEach {
+            if (it.id == response.data?.post_id)
+                it.rettiwts = response.data?.count
+        }
         view?.displayItems(homeItems)
     }
 
     private fun updateStarCount(response: UpdatePostResponse) {
-        homeItems.find { it.id == response.data?.post_id }?.stars = response.data?.count
+        homeItems.forEach {
+            if (it.id == response.data?.post_id)
+                it.stars = response.data?.count
+        }
         view?.displayItems(homeItems)
     }
 

@@ -44,11 +44,12 @@ class HomeAdapter(private val onClickListener: OnClickListener) : RecyclerView.A
                 itemHomeRettiwtIv.setVisible(item.originalPoster != null)
                 itemHomeRettiwtNameTv.setVisible(item.originalPoster != null)
                 itemHomeRettiwtNameTv.text = item.originalPoster
+                itemHomeBodyTv.setVisible(!item.text.isNullOrBlank())
                 itemHomeBodyTv.text = item.text
                 itemHomeNameTv.text = item.user
                 itemHomeRettiwtsTv.text = "${item.rettiwts ?: 0}"
                 itemHomeStarsTv.text = "${item.stars ?: 0}"
-                itemHomeBodyDateTv.text = item.date?.changeDateFormat("dd/MM/yyyy HH:mm", "dd 'de' MMMM HH:mm")
+                itemHomeBodyDateTv.text = item.date?.changeDateFormat("yyyy-MM-dd'T'HH:mm:ssss", "dd 'de' MMMM HH:mm")
                 itemHomeCard.setVisible(item.picture != null)
                 Glide.with(this).load(item.picture)
                         .apply(RequestOptions().placeholder(R.drawable.bg_placeholder_photo)).into(itemHomeIv)
