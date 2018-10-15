@@ -26,11 +26,11 @@ class HomePresenter : HomeContract.Presenter {
                     }
                     METHOD_NEW_POST -> {
                         val response = gson.fromJson(message, NewPostResponse::class.java)
-                        updateItems(listOf(response.data!!.toModel()))
+                        updateItems(listOf(response.data!!.toModel()), false)
                     }
                     METHOD_GET_ALL -> {
                         val response = gson.fromJson(message, AllPostsResponse::class.java)
-                        updateItems(response.data!!.map { it.toModel() })
+                        updateItems(response.data!!.map { it.toModel() }, true)
                     }
                 }
             }
@@ -51,8 +51,8 @@ class HomePresenter : HomeContract.Presenter {
         AsyncSocket.send(METHOD_GET_ALL)
     }
 
-    private fun updateItems(posts: List<HomeItemModel>) {
-        if (posts.size > 1) {
+    private fun updateItems(posts: List<HomeItemModel>, allPosts: Boolean) {
+        if (allPosts) {
             homeItems = posts
         } else {
             homeItems = posts + homeItems
