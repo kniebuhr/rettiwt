@@ -50,9 +50,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/vertical_margin"
-        android:layout_marginBottom="@dimen/vertical_margin_large"
+        android:layout_marginBottom="@dimen/vertical_margin_small"
         android:background="@drawable/bg_rounded_accent"
         android:text="@string/login_enter"
         android:textAllCaps="false" />
+
+    <TextView
+        android:id="@+id/loginConfigBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:gravity="center"
+        android:padding="@dimen/vertical_margin"
+        android:text="@string/login_config" />
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import br.com.rettiwt.R
+import br.com.rettiwt.activity.config.createConfigIntent
 import br.com.rettiwt.activity.home.createHomeIntent
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.intentFor
@@ -28,12 +29,19 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         loginBtn.setOnClickListener {
             presenter.onClickEnter(loginUserEt.text.toString(), loginPasswordEt.text.toString())
         }
+        loginConfigBtn.setOnClickListener {
+            presenter.onClickConfig()
+        }
     }
 
     override fun displayMessage(msg: String?) {
         runOnUiThread {
             toast(msg ?: getString(R.string.standard_error))
         }
+    }
+
+    override fun openConfig() {
+        startActivity(createConfigIntent())
     }
 
     override fun openHome() {

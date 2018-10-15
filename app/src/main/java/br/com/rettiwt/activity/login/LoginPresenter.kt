@@ -39,6 +39,10 @@ class LoginPresenter : LoginContract.Presenter {
         }
     }
 
+    override fun onClickConfig() {
+        view?.openConfig()
+    }
+
     override fun attachView(view: LoginContract.View) {
         this.view = view
         AsyncSocket.socketListener = socketListener
