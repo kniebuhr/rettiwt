@@ -11,6 +11,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ConnectException
 import java.net.Socket
+import java.net.SocketException
 import kotlin.concurrent.thread
 
 object AsyncSocket {
@@ -27,7 +28,7 @@ object AsyncSocket {
     fun start() {
         thread {
             try {
-                socket = Socket("192.168.100.103", 5000)
+                socket = Socket("192.168.15.50", 5000)
                 socketOutput = BufferedReader(InputStreamReader(socket?.getInputStream()))
                 keepAlive()
                 listen()
@@ -45,6 +46,15 @@ object AsyncSocket {
 
     private fun keepAlive() {
         handler?.postDelayed(runnable, 12500)
+    }
+
+    private fun removeKeepAlive() {
+        runnable?.let { handler?.removeCallbacks(it) }
+    }
+
+    private fun finish() {
+        socket = null
+        socketOutput = null
     }
 
     private fun listen() {
@@ -78,7 +88,7 @@ object AsyncSocket {
                 parseException(e)
             }
         } ?: run {
-            socketListener?.onError(1404, "Socket foi fechado, tente novamente")
+            socketListener?.onError(1702, "Tente novamente")
             start()
         }
     }
@@ -86,11 +96,13 @@ object AsyncSocket {
     private fun parseException(e: Exception) {
         e.printStackTrace()
         when (e) {
-            is ConnectException -> {
-                socketListener?.onError(1404, "Erro de conexão")
+            is ConnectException -> socketListener?.onError(1701, "Erro de conexão")
+            is SocketException -> {
+                removeKeepAlive()
+                finish()
+                socketListener?.onError(1701, "Erro de conexão")
             }
-            else ->
-                socketListener?.onError(1404, "Erro desconhecido")
+            else -> socketListener?.onError(1404, "Erro desconhecido")
         }
     }
 
