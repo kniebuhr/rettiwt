@@ -22,13 +22,14 @@ object AsyncSocket {
     }
 
     private var socket: Socket? = null
+    private var socketHost = "192.168.15.50"
     private var socketOutput: BufferedReader? = null
     var socketListener: SocketListener? = null
 
     fun start() {
         thread {
             try {
-                socket = Socket("192.168.15.50", 5000)
+                socket = Socket(socketHost, 5000)
                 socketOutput = BufferedReader(InputStreamReader(socket?.getInputStream()))
                 keepAlive()
                 listen()
@@ -104,6 +105,13 @@ object AsyncSocket {
             }
             else -> socketListener?.onError(1404, "Erro desconhecido")
         }
+    }
+
+    fun updateSocketIpv4(ipv4: String) {
+        removeKeepAlive()
+        finish()
+        socketHost = ipv4
+        start()
     }
 
 }

@@ -52,7 +52,11 @@ class HomePresenter : HomeContract.Presenter {
     }
 
     private fun updateItems(posts: List<HomeItemModel>) {
-        homeItems = posts + homeItems
+        if (posts.size > 1) {
+            homeItems = posts
+        } else {
+            homeItems = posts + homeItems
+        }
         view?.displayItems(homeItems)
     }
 
@@ -79,6 +83,14 @@ class HomePresenter : HomeContract.Presenter {
     private fun logout(invalid: Boolean) {
         PreferencesHelper.putAuthorization(null)
         view?.openLogin(invalid)
+    }
+
+    override fun onClickClearDb() {
+        AsyncSocket.send(METHOD_CLEAR, null)
+    }
+
+    override fun onClickConfig() {
+        view?.openConfig()
     }
 
     override fun onClickSend(message: String) {

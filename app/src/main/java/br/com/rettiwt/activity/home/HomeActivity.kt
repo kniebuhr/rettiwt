@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_home.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 import android.provider.MediaStore
+import br.com.rettiwt.activity.config.createConfigIntent
 
 class HomeActivity : AppCompatActivity(), HomeContract.View {
 
@@ -46,7 +47,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         setSupportActionBar(toolbar)
-        title = "Rettiwt"
+        title = getString(R.string.home_title)
         setListeners()
         presenter.startSocket()
     }
@@ -65,6 +66,14 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         when (item?.itemId) {
             R.id.action_logout -> {
                 presenter.onClickLogout()
+                return true
+            }
+            R.id.action_clean -> {
+                presenter.onClickClearDb()
+                return true
+            }
+            R.id.action_config -> {
+                presenter.onClickConfig()
                 return true
             }
             else -> {
@@ -115,6 +124,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
 
     override fun openLogin(invalid: Boolean) {
         startActivity(createLoginIntent())
+    }
+
+    override fun openConfig() {
+        startActivity(createConfigIntent())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -3,6 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_clean"
+        android:title="Limpar Banco"
+        android:icon="@drawable/ic_waste_bin"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_config"
+        android:title="Sair"
+        android:icon="@drawable/ic_config"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="Sair"
         android:icon="@drawable/ic_logout"

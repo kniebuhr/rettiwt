@@ -11,6 +11,7 @@ interface HomeContract {
         fun displaySnack(action: () -> Unit)
         fun displayNewContentButton(show: Boolean)
         fun displayItems(items: List<HomeItemModel>)
+        fun openConfig()
         fun openGalleryPicker()
         fun openLogin(invalid: Boolean)
     }
@@ -18,6 +19,8 @@ interface HomeContract {
     interface Presenter {
         fun startSocket()
         fun onClickLogout()
+        fun onClickClearDb()
+        fun onClickConfig()
         fun onClickStar(id: String?)
         fun onClickRettiwt(id: String?)
         fun onClickSend(message: String)

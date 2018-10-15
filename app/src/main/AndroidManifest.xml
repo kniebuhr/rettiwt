@@ -3,7 +3,7 @@
     package="br.com.rettiwt">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +14,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".activity.home.HomeActivity" />
         <activity android:name=".activity.login.LoginActivity" />
-        <activity android:name=".activity.splash.SplashActivity"
+        <activity
+            android:name=".activity.splash.SplashActivity"
             android:theme="@style/SlashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.config.ConfigActivity"></activity>
     </application>
 
 </manifest>
