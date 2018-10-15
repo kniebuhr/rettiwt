@@ -8,7 +8,6 @@ interface HomeContract {
 
     interface View {
         fun displayMessage(msg: String?)
-        fun displaySnack(action: () -> Unit)
         fun displayNewContentButton(show: Boolean)
         fun displayItems(items: List<HomeItemModel>)
         fun openConfig()
@@ -17,7 +16,7 @@ interface HomeContract {
     }
 
     interface Presenter {
-        fun startSocket()
+        fun loadData()
         fun onClickLogout()
         fun onClickClearDb()
         fun onClickConfig()

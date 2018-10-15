@@ -47,7 +47,8 @@ class HomePresenter : HomeContract.Presenter {
     private var view: HomeContract.View? = null
     private var homeItems: List<HomeItemModel> = listOf()
 
-    override fun startSocket() {
+    override fun loadData() {
+        AsyncSocket.socketListener = socketListener
         AsyncSocket.send(METHOD_GET_ALL)
     }
 
@@ -56,6 +57,7 @@ class HomePresenter : HomeContract.Presenter {
             homeItems = posts
         } else {
             homeItems = posts + homeItems
+            view?.displayNewContentButton(true)
         }
         view?.displayItems(homeItems)
     }
@@ -122,7 +124,6 @@ class HomePresenter : HomeContract.Presenter {
 
     override fun attachView(view: HomeContract.View) {
         this.view = view
-        AsyncSocket.socketListener = socketListener
     }
 
     override fun detachView() {

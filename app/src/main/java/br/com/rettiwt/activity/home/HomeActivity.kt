@@ -49,7 +49,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
         setSupportActionBar(toolbar)
         title = getString(R.string.home_title)
         setListeners()
-        presenter.startSocket()
+        presenter.loadData()
     }
 
     override fun onDestroy() {
@@ -83,11 +83,20 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
     }
 
     private fun setListeners() {
+        homeSrl.setOnRefreshListener {
+            presenter.loadData()
+        }
         homeSendBtn.setOnClickListener {
             presenter.onClickSend(homeEt.text.toString())
             homeEt.setText("")
         }
-        homeCameraBtn.setOnClickListener { presenter.onClickCamera() }
+        homeCameraBtn.setOnClickListener {
+            presenter.onClickCamera()
+        }
+        homeNewContentBtn.setOnClickListener {
+            homeRv.scrollToPosition(0)
+            displayNewContentButton(false)
+        }
     }
 
     override fun displayNewContentButton(show: Boolean) {
@@ -97,22 +106,16 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
     }
 
     override fun displayItems(items: List<HomeItemModel>) {
+        homeSrl.isRefreshing = false
         runOnUiThread {
             adapter.list = items
         }
     }
 
     override fun displayMessage(msg: String?) {
+        homeSrl.isRefreshing = false
         runOnUiThread {
             toast(msg ?: getString(R.string.standard_error))
-        }
-    }
-
-    override fun displaySnack(action: () -> Unit) {
-        runOnUiThread {
-            snack(homeCoordinator, getString(R.string.standard_snack_msg), getString(R.string.standard_snack_btn)) {
-                action()
-            }
         }
     }
 

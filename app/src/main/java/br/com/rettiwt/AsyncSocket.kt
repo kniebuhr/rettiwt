@@ -22,7 +22,7 @@ object AsyncSocket {
     }
 
     private var socket: Socket? = null
-    private var socketHost = "192.168.15.50"
+    private var socketHost = "192.168.15.40"
     private var socketOutput: BufferedReader? = null
     var socketListener: SocketListener? = null
 
@@ -59,6 +59,7 @@ object AsyncSocket {
         while (true) {
             val line = socketOutput?.readLine()
             if (line == null) {
+                finish()
                 break
             } else if (line.isNotBlank()) {
                 Log.e("SOCKET_TAG", line)
