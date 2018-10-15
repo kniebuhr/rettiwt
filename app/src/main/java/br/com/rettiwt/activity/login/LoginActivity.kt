@@ -25,6 +25,11 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         setListeners()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.detachView()
+    }
+
     private fun setListeners() {
         loginBtn.setOnClickListener {
             presenter.onClickEnter(loginUserEt.text.toString(), loginPasswordEt.text.toString())

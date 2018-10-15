@@ -3,6 +3,7 @@ package br.com.rettiwt.activity.config
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import br.com.rettiwt.AsyncSocket
 import br.com.rettiwt.R
 import kotlinx.android.synthetic.main.activity_config.*
@@ -18,6 +19,16 @@ class ConfigActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         title = getString(R.string.config_title)
         setListeners()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setListeners() {

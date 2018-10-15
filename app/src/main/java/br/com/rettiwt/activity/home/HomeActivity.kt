@@ -104,7 +104,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.View {
 
     override fun displayMessage(msg: String?) {
         runOnUiThread {
-            applicationContext.toast(msg ?: getString(R.string.standard_error))
+            toast(msg ?: getString(R.string.standard_error))
         }
     }
 

@@ -49,11 +49,8 @@ object AsyncSocket {
         handler?.postDelayed(runnable, 12500)
     }
 
-    private fun removeKeepAlive() {
-        runnable?.let { handler?.removeCallbacks(it) }
-    }
-
     private fun finish() {
+        runnable?.let { handler?.removeCallbacks(it) }
         socket = null
         socketOutput = null
     }
@@ -68,7 +65,11 @@ object AsyncSocket {
                 val gson = Gson()
                 val response = gson.fromJson(line, MethodResponse::class.java)
                 if (response.status != 1200) {
-                    socketListener?.onError(response.status, response.message)
+                    if (response.method == METHOD_CONNECT) {
+                        finish()
+                    } else {
+                        socketListener?.onError(response.status, response.message)
+                    }
                 } else if (response.method == METHOD_CONNECT) {
                     val response = gson.fromJson(line, ConnectResponse::class.java)
                     PreferencesHelper.putSocketId(response.data?.socket_id)
@@ -99,7 +100,6 @@ object AsyncSocket {
         when (e) {
             is ConnectException -> socketListener?.onError(1701, "Erro de conexão")
             is SocketException -> {
-                removeKeepAlive()
                 finish()
                 socketListener?.onError(1701, "Erro de conexão")
             }
@@ -108,7 +108,6 @@ object AsyncSocket {
     }
 
     fun updateSocketIpv4(ipv4: String) {
-        removeKeepAlive()
         finish()
         socketHost = ipv4
         start()
